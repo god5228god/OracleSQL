@@ -1,0 +1,41 @@
+LOCATIONS: LOCATION_ID, STREET_ADDRESS, POSTAL_CODE, CITY, STATE_PROVINCE, COUNTRY_ID	(23*6)  - 유훤
+           ++++++++++							   ==========
+
+
+COUNTRIES : COUNTRY_ID, COUNTRY_NAME, REGION_ID				(25*3)			-- 주열
+      	   +++++++++++	 	      =========	
+	
+
+REGIONS: REGION_ID, REGION_NAME;					(4*2)  			-- 유훤
+         +++++++++
+
+
+JOBS: JOB_ID, JOB_TITLE, MIN_SALARY, MAX_SALARY				(19*4)  		- 호열
+      ++++++	
+
+
+DEPARTMENTS: DEPARTMENT_ID, DEPARTMENT_NAME, MANAGER_ID, LOCATION_ID	(27*4)  		-- 진모
+	     ++++++++++++		     =======================
+
+
+EMPLOYEES: EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, HIRE_DATE, JOB_ID, SALARY, COMMISION_PCT, MANAGER_ID, DEPARTMENT_ID	(107*11)  - 수빈
+           +++++++++++							       ======			      =========================
+
+
+JOB_HISTORY: EMPLOYEE_ID, START_DATE, END_DATE, JOB_ID, DEPARTMENT_ID	(10*5) - 호열
+	     +++++++++++++++++++++++		=====================
+	     ===========
+
+
+
+DEPARTMENT1를 참조하는 모든 테이블: EMPLOYEES, JOB_HISTORY
+EMPLOYEES1를 참조하는 모든 테이블: DEPARTMENTS, EMPLOYEES, JOB_HISTORY
+
+
+
+DEPARTMENT1 PK: DEPARTMENT_ID → EMPLOYEES1.DEPARTMENT_ID
+
+EMPLOYEES1 PK: EMPLOYEE_ID → 
+											
+
+REGIONS > COUNTRIES >  LOCATIONS >  JOBS >  DEPARTMENTS > EMPLOYEES > JOBS_HISTORY
