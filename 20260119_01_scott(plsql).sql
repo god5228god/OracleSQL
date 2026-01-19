@@ -1144,6 +1144,28 @@ CREATE OR REPLACE TRIGGER TRG_CHULGO
     AFTER
     INSERT OR UPDATE OR DELETE ON TBL_출고
     FOR EACH ROW
+DECLARE
+    USER_DEFINE_ERROR   EXCEPTION;
+BEGIN
+    IF(INSERTING)   THEN
+        -- 출고 테이블을 INSERT할 때
+        -- 상품 테이블에 재고-출고 업데이트
+        -- 재고가 출고보다 작으면 불가능
+        IF(재고수량<출고수량)
+            RAISE USER_DEFINE_ERROR;
+        END IF;
+        
+        
+    ELSIF (UPDATING) THEN
+    -- 출고테이블을 UPDATE할 때(출고수량 변동)
+    -- 상품테이블 재고수량 업데이트
+    
+    ELSIF (DELETING) THEN
+    -- 출고테이블 DELETE할 때
+    -- 상품테이블 재고수량 업데이트
+    
+    END IF;
+END;
 
 
 
