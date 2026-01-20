@@ -1145,26 +1145,61 @@ CREATE OR REPLACE TRIGGER TRG_CHULGO
     INSERT OR UPDATE OR DELETE ON TBL_출고
     FOR EACH ROW
 DECLARE
+    V_재고수량  TBL_상품.재고수량%TYPE;
     USER_DEFINE_ERROR   EXCEPTION;
 BEGIN
     IF(INSERTING)   THEN
         -- 출고 테이블을 INSERT할 때
         -- 상품 테이블에 재고-출고 업데이트
         -- 재고가 출고보다 작으면 불가능
-        IF(재고수량<출고수량)
+       SELECT 재고수량 INTO V_재고수량
+       FROM TBL_상품
+       WHERE 상품코드=:NEW.상품코드;
+        
+        IF(V_재고수량 <:NEW.출고수량)   THEN
             RAISE USER_DEFINE_ERROR;
         END IF;
-        
+         
+         UPDATE TBL_상품
+         SET 재고수량 = 재고수량 - :NEW.출고수량
+         WHERE 상품코드 = :NEW.상품코드;
         
     ELSIF (UPDATING) THEN
     -- 출고테이블을 UPDATE할 때(출고수량 변동)
     -- 상품테이블 재고수량 업데이트
+        SELECT 재고수량 INTO V_재고수량
+        FROM TBL_상품
+        WHERE 상품코드=:NEW.상품코드;
+        
+        IF(V_재고수량 +:OLD.출고수량 - :NEW.출고수량 < 0)    THEN
+            RAISE USER_DEFINE_ERROR;
+        END IF;
+        
+        UPDATE TBL_상품
+        SET 재고수량 = 재고수량 + :OLD.출고수량 - :NEW.출고수량
+        WHERE 상품코드 = :NEW.상품코드;
     
     ELSIF (DELETING) THEN
     -- 출고테이블 DELETE할 때
     -- 상품테이블 재고수량 업데이트
-    
+        
+        SELECT 재고수량 INTO V_재고수량
+        FROM TBL_상품
+        WHERE 상품코드=:OLD.상품코드;
+        
+        IF(V_재고수량 - :OLD.출고수량 < 0)    THEN
+            RAISE USER_DEFINE_ERROR;
+        END IF;
+        
+        
+        UPDATE TBL_상품
+        SET 재고수량 = 재고수량 + :OLD.출고수량
+        WHERE 상품코드 = :OLD.상품코드;
     END IF;
+    
+    EXCEPTION
+        WHEN USER_DEFINE_ERROR THEN
+            RAISE_APPLICATION_ERROR(-20004, '재고부족');
 END;
 
 
